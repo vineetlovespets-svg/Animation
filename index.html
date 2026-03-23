@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supertails — Meet Kiya</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --orange: #E8521A;
+  --orange-light: #FFF0E8;
+  --dark: #1A1A1A;
+  --slate: #4A5568;
+  --muted: #94A3B8;
+  --border: #EBEBEB;
+  --green: #8DC63F;
+  --bg: #FAFAF8;
+  --white: #fff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  overflow-x: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 40px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo { display: flex; align-items: center; gap: 8px; }
+.logo-mark { font-size: 20px; font-weight: 700; color: var(--dark); letter-spacing: -0.5px; }
+.logo-mark em { font-style: normal; color: var(--orange); }
+.header-sub { font-size: 11px; letter-spacing: 1.8px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+
+/* ── STAGE STRIP ── */
+.stage-strip {
+  display: flex;
+  background: var(--white);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.stage-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px 6px 14px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  position: relative;
+  transition: background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.stage-btn:hover { background: var(--orange-light); }
+.stage-btn.active { background: var(--orange-light); }
+.stage-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 2px;
+  background: var(--orange);
+  z-index: 2;
+}
+
+.stage-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 5px;
+  transition: all 0.25s;
+}
+
+.stage-btn.is-live .stage-num { background: var(--orange); color: white; box-shadow: 0 2px 8px rgba(232,82,26,0.3); }
+.stage-btn.active .stage-num { background: var(--orange); color: white; transform: scale(1.15); box-shadow: 0 0 0 4px rgba(232,82,26,0.15), 0 2px 12px rgba(232,82,26,0.4); }
+
+.stage-name { font-size: 10px; font-weight: 600; color: var(--muted); line-height: 1.3; }
+.stage-btn.is-live .stage-name { color: var(--dark); }
+.stage-btn.active .stage-name { color: var(--orange); }
+
+.live-pip { display: inline-block; width: 5px; height: 5px; background: var(--green); border-radius: 50%; margin-left: 3px; vertical-align: middle; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── MAIN ── */
+.main {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── LEFT SCENE ── */
+.scene {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.scene-circle {
+  position: absolute;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -55%);
+  transition: background 0.6s ease;
+  opacity: 0.6;
+}
+
+.dog-area {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dog-svg-wrap {
+  position: relative;
+}
+
+.dog-main {
+  width: 200px; height: 200px;
+  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,0.13));
+}
+
+/* Speech bubble */
+.bubble {
+  position: absolute;
+  top: -8px; right: -20px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px 14px 14px 0;
+  padding: 9px 13px;
+  font-size: 12px; font-weight: 500;
+  color: var(--dark);
+  max-width: 148px;
+  line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  opacity: 0;
+  transform: scale(0.85) translateY(6px);
+  transition: opacity 0.3s ease 0.35s, transform 0.3s ease 0.35s;
+  z-index: 5;
+  white-space: normal;
+}
+.bubble.show { opacity: 1; transform: scale(1) translateY(0); }
+
+.age-pill {
+  background: var(--orange);
+  color: white;
+  font-size: 11px; font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-top: 10px;
+  box-shadow: 0 2px 10px rgba(232,82,26,0.3);
+  transition: all 0.4s;
+}
+
+.scene-tag {
+  position: absolute;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 11px; font-weight: 600; color: var(--slate);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  opacity: 0; transition: opacity 0.4s 0.55s;
+  white-space: nowrap;
+  z-index: 3;
+}
+.scene-tag.show { opacity: 1; }
+.scene-tag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); flex-shrink: 0; }
+
+/* ── RIGHT CONTENT ── */
+.content {
+  padding: 28px 36px;
+  overflow-y: auto;
+}
+
+.stage-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+
+.content h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px; font-weight: 400; color: var(--dark);
+  line-height: 1.2; margin-bottom: 6px;
+}
+
+.content-sub { font-size: 14px; color: var(--slate); line-height: 1.6; margin-bottom: 20px; }
+
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+.services { display: flex; flex-direction: column; gap: 7px; }
+
+.svc {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: border-color 0.2s, background 0.2s;
+  cursor: default;
+}
+.svc:hover { border-color: var(--orange); background: var(--orange-light); }
+.svc-icon { font-size: 18px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+.svc strong { display: block; font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
+.svc span { font-size: 11px; color: var(--slate); line-height: 1.4; }
+
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-weight: 500; color: var(--slate);
+}
+.chip.on { background: var(--orange-light); border-color: rgba(232,82,26,0.25); color: var(--orange); }
+
+.status-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px; margin-top: 16px;
+  font-size: 12px; font-weight: 600;
+}
+.status-row.live { background: #F0FAE6; color: #3D6B18; }
+.status-row.plan { background: #F5F5F5; color: var(--muted); }
+.sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-row.live .sdot { background: var(--green); animation: blink 2s infinite; }
+.status-row.plan .sdot { background: var(--muted); }
+
+.nav-hint { font-size: 11px; color: var(--muted); margin-top: 18px; letter-spacing: 0.3px; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: fadeUp 0.3s ease both; }
+.svc:nth-child(1){animation-delay:0.04s}
+.svc:nth-child(2){animation-delay:0.08s}
+.svc:nth-child(3){animation-delay:0.12s}
+.svc:nth-child(4){animation-delay:0.16s}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 80 80" fill="none">
+      <ellipse cx="40" cy="54" rx="22" ry="18" fill="#8DC63F"/>
+      <circle cx="40" cy="26" r="16" fill="#8DC63F"/>
+      <ellipse cx="26" cy="17" rx="6" ry="9" fill="#8DC63F" transform="rotate(-18 26 17)"/>
+      <ellipse cx="54" cy="17" rx="6" ry="9" fill="#8DC63F" transform="rotate(18 54 17)"/>
+      <circle cx="35" cy="28" r="3" fill="white"/><circle cx="45" cy="28" r="3" fill="white"/>
+      <circle cx="35.5" cy="28.5" r="1.5" fill="#222"/><circle cx="45.5" cy="28.5" r="1.5" fill="#222"/>
+      <path d="M36 35 Q40 39 44 35" stroke="#222" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="logo-mark">super<em>tails</em></div>
+  </div>
+  <div class="header-sub">One platform · Entire pet lifecycle</div>
+</header>
+
+<div class="stage-strip" id="strip"></div>
+
+<div class="main">
+  <div class="scene" id="scene">
+    <div class="scene-circle" id="sceneCircle"></div>
+    <div class="dog-area">
+      <div class="dog-svg-wrap">
+        <div class="bubble" id="bubble"></div>
+        <svg class="dog-main" id="dogSvg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="age-pill" id="agePill">Puppy · 0–6 months</div>
+    </div>
+    <div class="scene-tag" id="sceneTag">
+      <div class="scene-tag-dot"></div>
+      <span id="tagTxt">Supertails is here</span>
+    </div>
+  </div>
+
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────────
+const S = [
+  {
+    name:"Getting\na Pet", live:false,
+    age:"Before day one",
+    bubble:"Which breed suits me? 🤔",
+    bg:"#F2F2F2", mood:"curious",
+    head:"Thinking of getting a pet",
+    sub:"The decision moment — before a single purchase. 90% of future pet parents don't know where to start.",
+    tag:"We'll be there from the very beginning",
+    svcs:[
+      {i:"🐕",t:"Breed compatibility guide",d:"Match breed to lifestyle, home, and activity level"},
+      {i:"📋",t:"First-timer checklist",d:"Everything to buy, prepare, and expect before day one"},
+      {i:"🏠",t:"Home readiness guide",d:"Pet-proofing specific to your breed and living space"},
+    ],
+    data:["Breed interest","Location","Lifestyle signals"],
+    hi:[0], status:"Building — FY27", islive:false
+  },
+  {
+    name:"First Year\nof Care", live:true,
+    age:"Puppy · 0–12 months",
+    bubble:"New home! I need everything 🐾",
+    bg:"#FFF0E8", mood:"excited",
+    head:"The most intense year",
+    sub:"Highest spend. Highest anxiety. Supertails acquires here — and begins building Kiya's profile.",
+    tag:"Your first call for everything",
+    svcs:[
+      {i:"🛍️",t:"Food, treats & accessories",d:"Age and breed-specific nutrition from day one"},
+      {i:"💉",t:"Vaccination tracking",d:"Full schedule, reminders, and at-home vet visits"},
+      {i:"🤝",t:"SuperCompanion",d:"Dedicated pet expert on WhatsApp — 24/7"},
+      {i:"🏥",t:"First vet consultation",d:"Online or at-home. The trust ladder begins."},
+    ],
+    data:["Name, breed, age, weight","First purchase","Vaccination schedule","Food preferences"],
+    hi:[0,1], status:"Live · 45%+ YoY order growth", islive:true
+  },
+  {
+    name:"Ongoing\nRoutine", live:true,
+    age:"Adult · 1–5 years",
+    bubble:"Thursday already? Time to reorder 🐶",
+    bg:"#F0FAE6", mood:"happy",
+    head:"The settled rhythm",
+    sub:"Spend drops — but frequency is everything. Smart replenishment keeps Supertails top of mind before you even think to reorder.",
+    tag:"We know your routine better than you do",
+    svcs:[
+      {i:"🔄",t:"Auto-replenishment",d:"Food arrives before it runs out — zero effort"},
+      {i:"💊",t:"Pharmacy refills",d:"Tick prevention, supplements, prescriptions on schedule"},
+      {i:"📅",t:"Proactive health nudges",d:'"Kiya\'s annual check is next month" — before you forget'},
+      {i:"🎂",t:"Birthday & milestone offers",d:"Personalised to Kiya's breed and life stage"},
+    ],
+    data:["Food consumption rate","Replenishment cadence","Browse signals","Health events"],
+    hi:[0,2], status:"Live · 330%+ Y1 revenue retention", islive:true
+  },
+  {
+    name:"Healthcare\n& Trust", live:true,
+    age:"Adult · any age",
+    bubble:"I trust you. Let's go to the clinic 🏥",
+    bg:"#FFF0E8", mood:"calm",
+    head:"Earning the right to care physically",
+    sub:"Online trust becomes physical care. Platform → Pharmacy → Home → Clinic → Diagnostics → Surgery. Trust is earned, never sold.",
+    tag:"We never sell surgeries. Trust is earned.",
+    svcs:[
+      {i:"🏥",t:"10 Supertails+ hospitals",d:"Fear-free veterinary care. 5★ rated."},
+      {i:"🔬",t:"Diagnostics & lab work",d:"In-house labs, bloodwork, imaging — all on the pet record"},
+      {i:"✂️",t:"Surgical procedures",d:"Earned through every previous stage"},
+      {i:"🦷",t:"Specialist care",d:"Dental, dermatology, orthopaedics on referral"},
+    ],
+    data:["Clinic visit history","Diagnostic records","Prescription history","Body condition score"],
+    hi:[1,2], status:"Live · 60% online→offline crossover", islive:true
+  },
+  {
+    name:"Senior\nCare", live:true,
+    age:"Senior · 7+ years",
+    bubble:"Slower now, but I still need you 🐾",
+    bg:"#F0F0F8", mood:"gentle",
+    head:"The highest-value years",
+    sub:"Spend spikes again. Chronic conditions and specialist care make this the highest LTV phase — and years of data make us irreplaceable.",
+    tag:"Years of data. Used exactly now.",
+    svcs:[
+      {i:"❤️",t:"Senior wellness programmes",d:"6-monthly full checks, proactive not reactive"},
+      {i:"💊",t:"Chronic disease management",d:"Diabetes, arthritis, kidney disease — long-term plans"},
+      {i:"🩺",t:"Pain management",d:"Evidence-based protocols, specialist-led"},
+      {i:"🤲",t:"Palliative care support",d:"Quality of life focus when it matters most"},
+    ],
+    data:["Chronic condition flags","Medication history","Dietary restrictions","Specialist cadence"],
+    hi:[0,1,2], status:"Live · Highest per-visit revenue", islive:true
+  },
+  {
+    name:"Tertiary\nServices", live:false,
+    age:"Any age",
+    bubble:"Insurance, boarding, travel? One platform! 🌍",
+    bg:"#F5F0FF", mood:"excited",
+    head:"The platform plays host",
+    sub:"Supertails becomes the data layer other businesses plug into. Insurance, boarding, training, travel — they all benefit from knowing Kiya already.",
+    tag:"Not just an app. An operating system.",
+    svcs:[
+      {i:"🛡️",t:"Pet insurance",d:"Pre-filled with health history. Fair pricing via real data."},
+      {i:"🏡",t:"Boarding networks",d:"Homes that already know Kiya's needs"},
+      {i:"✈️",t:"Pet travel",d:"Vet certificates, airline prep, destination vets"},
+      {i:"🎓",t:"Training referrals",d:"Matched by breed and behaviour profile"},
+    ],
+    data:["Full pet profile via API","Health score","Behaviour history"],
+    hi:[0], status:"Building — FY27 roadmap", islive:false
+  },
+  {
+    name:"End of\nLife", live:false,
+    age:"The hardest day",
+    bubble:"Thank you for every moment 💛",
+    bg:"#FFF8E8", mood:"peaceful",
+    head:"The moment that matters most",
+    sub:"Handled with the sensitivity it deserves. And when the time is right — Supertails is gently there for what comes next.",
+    tag:"From day one to the very last.",
+    svcs:[
+      {i:"🌿",t:"Palliative care coordination",d:"Home visits, comfort care, dignity-focused"},
+      {i:"💛",t:"Memorial & grief support",d:"Resources, community, and space to grieve"},
+      {i:"📚",t:"Kiya's life record",d:"Full history, photos, and memories — yours forever"},
+      {i:"🐾",t:"When you're ready",d:"A gentle path back to pet parenthood, at your pace"},
+    ],
+    data:["Health trajectory","Palliative flags","Owner preferences"],
+    hi:[0], status:"Planned — FY28", islive:false
+  }
+];
+
+// ─── Dog drawing ─────────────────────────────────────────────────────
+function dog(mood) {
+  const M = {
+    curious: {bc:"#D4B896",ec:"#A8845C",sz:0.78,tail:25,smile:0,tongue:false,wag:false,eyes:true},
+    excited: {bc:"#C8A882",ec:"#A0785A",sz:1.0, tail:70,smile:4,tongue:true, wag:true, eyes:true},
+    happy:   {bc:"#C8A882",ec:"#A0785A",sz:1.0, tail:55,smile:3,tongue:false,wag:true, eyes:true},
+    calm:    {bc:"#B89268",ec:"#8A6040",sz:1.0, tail:38,smile:2,tongue:false,wag:false,eyes:true},
+    gentle:  {bc:"#A8825A",ec:"#785030",sz:0.95,tail:22,smile:1,tongue:false,wag:false,eyes:true},
+    peaceful:{bc:"#9A7248",ec:"#6A4228",sz:0.9, tail:12,smile:1,tongue:false,wag:false,eyes:false},
+  };
+  const c = M[mood] || M.happy;
+  const s = c.sz;
+  const cx=100, cy=108;
+  const bw=52*s, bh=46*s;
+  const hr=33*s;
+  const hcx=cx-bw*0.3, hcy=cy-bh*0.6-hr*0.65;
+  const legH=26*s, legW=11*s;
+  const tr=(c.tail*Math.PI/180);
+  const tx=cx+bw, ty=cy+4;
+  const tx2=tx+Math.cos(tr)*32*s, ty2=ty-Math.sin(tr)*32*s;
+
+  return `
+<ellipse cx="${cx}" cy="${cy+bh*0.5+legH+5}" rx="${bw*0.75}" ry="5" fill="rgba(0,0,0,0.07)"/>
+<path d="M${tx} ${ty} Q${(tx+tx2)/2} ${ty2-16*s} ${tx2} ${ty2}" stroke="${c.ec}" stroke-width="${7*s}" stroke-linecap="round" fill="none">${c.wag?`<animateTransform attributeName="transform" type="rotate" values="0 ${tx} ${ty};10 ${tx} ${ty};0 ${tx} ${ty};-10 ${tx} ${ty};0 ${tx} ${ty}" dur="0.7s" repeatCount="indefinite" additive="sum"/>`:''}
+</path>
+<ellipse cx="${cx}" cy="${cy}" rx="${bw}" ry="${bh}" fill="${c.bc}"/>
+<ellipse cx="${cx-bw*0.22}" cy="${cy+bh*0.1}" rx="${bw*0.32}" ry="${bh*0.42}" fill="rgba(255,255,255,0.18)"/>
+<rect x="${cx-bw*0.62}" y="${cy+bh*0.48}" width="${legW}" height="${legH}" rx="${legW/2}" fill="${c.ec}"/>
+<rect x="${cx-bw*0.2}" y="${cy+bh*0.58}" width="${legW}" height="${legH*0.92}" rx="${legW/2}" fill="${c.bc}"/>
+<rect x="${cx+bw*0.08}" y="${cy+bh*0.58}" width="${legW}" height="${legH*0.92}" rx="${legW/2}" fill="${c.bc}"/>
+<rect x="${cx+bw*0.5}" y="${cy+bh*0.48}" width="${legW}" height="${legH}" rx="${legW/2}" fill="${c.ec}"/>
+<ellipse cx="${cx-bw*0.58}" cy="${cy+bh*0.48+legH+3}" rx="${legW*0.65}" ry="4" fill="${c.ec}"/>
+<ellipse cx="${cx+bw*0.54}" cy="${cy+bh*0.48+legH+3}" rx="${legW*0.65}" ry="4" fill="${c.ec}"/>
+<ellipse cx="${hcx}" cy="${hcy}" rx="${hr}" ry="${hr}" fill="${c.bc}"/>
+<ellipse cx="${hcx-hr*0.52}" cy="${hcy-hr*0.28}" rx="${hr*0.33}" ry="${hr*0.52}" fill="${c.ec}" transform="rotate(-16 ${hcx-hr*0.52} ${hcy-hr*0.28})"/>
+<ellipse cx="${hcx+hr*0.36}" cy="${hcy-hr*0.32}" rx="${hr*0.28}" ry="${hr*0.45}" fill="${c.ec}" transform="rotate(12 ${hcx+hr*0.36} ${hcy-hr*0.32})"/>
+<ellipse cx="${hcx-hr*0.12}" cy="${hcy+hr*0.28}" rx="${hr*0.4}" ry="${hr*0.26}" fill="#F5E2CC"/>
+<ellipse cx="${hcx-hr*0.12}" cy="${hcy+hr*0.16}" rx="${hr*0.14}" ry="${hr*0.09}" fill="#2A1008"/>
+${c.eyes
+  ? `<circle cx="${hcx+hr*0.16}" cy="${hcy-hr*0.1}" r="${4*s}" fill="#2A1008"/>
+     <circle cx="${hcx-hr*0.3}" cy="${hcy-hr*0.1}" r="${4*s}" fill="#2A1008"/>
+     <circle cx="${hcx+hr*0.19}" cy="${hcy-hr*0.14}" r="${4*s*0.38}" fill="white"/>
+     <circle cx="${hcx-hr*0.27}" cy="${hcy-hr*0.14}" r="${4*s*0.38}" fill="white"/>`
+  : `<path d="M${hcx+hr*0.02} ${hcy-hr*0.1} Q${hcx+hr*0.18} ${hcy-hr*0.02} ${hcx+hr*0.34} ${hcy-hr*0.1}" stroke="#2A1008" stroke-width="2" fill="none" stroke-linecap="round"/>
+     <path d="M${hcx-hr*0.44} ${hcy-hr*0.1} Q${hcx-hr*0.28} ${hcy-hr*0.02} ${hcx-hr*0.12} ${hcy-hr*0.1}" stroke="#2A1008" stroke-width="2" fill="none" stroke-linecap="round"/>`}
+<path d="M${hcx-hr*0.22} ${hcy+hr*0.36} Q${hcx-hr*0.1} ${hcy+hr*0.36+c.smile} ${hcx+hr*0.02} ${hcy+hr*0.36}" stroke="#2A1008" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+${mood!=='curious'?`<rect x="${hcx-hr*0.58}" y="${hcy+hr*0.7}" width="${hr*1.16}" height="${hr*0.2}" rx="${hr*0.09}" fill="#E8521A"/><circle cx="${hcx}" cy="${hcy+hr*0.8+hr*0.1}" r="${hr*0.11}" fill="gold"/>`:''}
+${c.tongue?`<ellipse cx="${hcx-hr*0.1}" cy="${hcy+hr*0.46}" rx="${hr*0.13}" ry="${hr*0.17}" fill="#E88"/>`:''}
+  `.trim();
+}
+
+// ─── Strip ───────────────────────────────────────────────────────────
+function renderStrip() {
+  document.getElementById('strip').innerHTML = S.map((s,i)=>`
+    <button class="stage-btn ${s.live?'is-live':''} ${i===1?'active':''}" onclick="go(${i})" id="b${i}">
+      <div class="stage-num">${i+1}</div>
+      <div class="stage-name">${s.name.replace('\n','<br>')}${s.live?'<span class="live-pip"></span>':''}</div>
+    </button>`).join('');
+}
+
+// ─── Content ─────────────────────────────────────────────────────────
+function renderContent(idx) {
+  const s = S[idx];
+  document.getElementById('content').innerHTML = `
+    <div class="stage-eyebrow anim">Stage ${idx+1} of ${S.length}</div>
+    <h2 class="anim">${s.head}</h2>
+    <div class="content-sub anim">${s.sub}</div>
+    <div class="section-label">What Supertails does here</div>
+    <div class="services">
+      ${s.svcs.map(v=>`<div class="svc anim"><div class="svc-icon">${v.i}</div><div><strong>${v.t}</strong><span>${v.d}</span></div></div>`).join('')}
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">What we add to Kiya's profile</div>
+    <div class="chips anim">
+      ${s.data.map((d,i)=>`<span class="chip ${s.hi.includes(i)?'on':''}">${d}</span>`).join('')}
+    </div>
+    <div class="status-row ${s.islive?'live':'plan'} anim">
+      <div class="sdot"></div>${s.status}
+    </div>
+    <div class="nav-hint">← → arrow keys to navigate</div>
+  `;
+}
+
+// ─── Scene ───────────────────────────────────────────────────────────
+function renderScene(idx) {
+  const s = S[idx];
+  document.getElementById('sceneCircle').style.background = s.bg;
+  document.getElementById('dogSvg').innerHTML = dog(s.mood);
+  document.getElementById('agePill').textContent = s.age;
+  document.getElementById('tagTxt').textContent = s.tag;
+
+  const bub = document.getElementById('bubble');
+  bub.classList.remove('show');
+  bub.textContent = s.bubble;
+  setTimeout(()=>bub.classList.add('show'), 380);
+
+  const tag = document.getElementById('sceneTag');
+  tag.classList.remove('show');
+  setTimeout(()=>tag.classList.add('show'), 580);
+}
+
+// ─── Navigation ──────────────────────────────────────────────────────
+let cur = 1;
+
+function go(idx) {
+  cur = idx;
+  document.querySelectorAll('.stage-btn').forEach((b,i)=>{
+    b.classList.toggle('active', i===idx);
+  });
+  renderContent(idx);
+  renderScene(idx);
+}
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' && cur<S.length-1) go(cur+1);
+  if(e.key==='ArrowLeft'  && cur>0)          go(cur-1);
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────
+renderStrip();
+go(1);
+</script>
+</body>
+</html>
